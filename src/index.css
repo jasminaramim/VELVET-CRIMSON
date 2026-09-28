@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'DM Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-bn: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+    --crimson: #B11226;
+    --crimson-dark: #8B0E1A;
+    --crimson-light: #FFF0F2;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: #111111;
+    background-color: #FAFAFA;
+  }
+
+  h1, h2, h3, .font-serif-brand {
+    font-family: var(--font-serif);
+  }
+}
+
+.font-editorial {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-bengali {
+  font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a5ac;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B11226;
+}
+

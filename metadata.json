@@ -1,0 +1,6 @@
+{
+  "name": "Velvet Crimson",
+  "description": "Velvet Crimson - Luxury Red & White Fashion & Dressing E-commerce Website with bilingual English and Bengali support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
