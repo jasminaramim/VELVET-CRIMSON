@@ -822,7 +822,7 @@ const memoryStore = {
 };
 
 // Initialize MongoDB connection and seed database folders / collections
-async function initMongoDB() {
+export async function initMongoDB() {
   try {
     console.log('[MongoDB] Connecting to MongoDB Atlas cluster...');
     mongoClient = new MongoClient(cleanUri, {
@@ -1202,26 +1202,34 @@ app.post('/api/admin/seed', async (req, res) => {
 });
 
 // Start Server with Vite Middleware
-async function startServer() {
+export async function startServer() {
   await initMongoDB();
 
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+  // On Vercel, we don't want to serve static files or Vite middleware manually, 
+  // as Vercel handles static routing and index.html serving via vercel.json.
+  if (process.env.VERCEL !== '1') {
+    if (process.env.NODE_ENV !== 'production') {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: 'spa',
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), 'dist');
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✨ Velvet Crimson Haute Couture server running on http://0.0.0.0:${PORT}`);
     });
   }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✨ Velvet Crimson Haute Couture server running on http://0.0.0.0:${PORT}`);
-  });
 }
 
-startServer();
+if (process.env.VERCEL !== '1') {
+  startServer();
+}
+
+export default app;
