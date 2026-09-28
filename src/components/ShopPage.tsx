@@ -42,7 +42,7 @@ export const ShopPage: React.FC = () => {
         const matchesName = p.name.toLowerCase().includes(query);
         const matchesNameBn = p.nameBn?.toLowerCase().includes(query);
         const matchesDesc = p.description.toLowerCase().includes(query);
-        const matchesTags = p.tags.some((tag) => tag.toLowerCase().includes(query));
+        const matchesTags = p.tags?.some((tag) => tag.toLowerCase().includes(query)) || false;
         if (!matchesName && !matchesNameBn && !matchesDesc && !matchesTags) {
           return false;
         }
