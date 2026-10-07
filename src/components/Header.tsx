@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Search,
@@ -39,6 +39,17 @@ export const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -57,7 +68,8 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all">
+    <>
+      <header className="sticky top-0 z-[999] w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all">
       {/* Top Luxury Announcement Bar */}
       <div className="bg-[#111111] text-white text-xs py-2 px-4 text-center tracking-wider flex items-center justify-center relative">
         <p className="font-light truncate text-gray-200">
@@ -98,7 +110,7 @@ export const Header: React.FC = () => {
               }}
               className="cursor-pointer flex flex-col items-start select-none group"
             >
-              <span className="text-2xl sm:text-3xl font-serif font-bold tracking-tighter text-[#B11226] group-hover:text-[#8B0E1A] transition-colors">
+              <span className="text-xl sm:text-3xl font-serif font-bold tracking-tighter text-[#B11226] group-hover:text-[#8B0E1A] transition-colors whitespace-nowrap">
                 VELVET CRIMSON
               </span>
               <span className="text-[9px] tracking-[0.35em] text-gray-400 uppercase font-medium -mt-1 hidden sm:block">
@@ -160,7 +172,7 @@ export const Header: React.FC = () => {
             {/* Wishlist Button */}
             <button
               onClick={() => setCurrentPage('wishlist')}
-              className="relative text-gray-700 hover:text-[#B11226] transition-colors p-1"
+              className="relative hidden md:block text-gray-700 hover:text-[#B11226] transition-colors p-1"
               aria-label="Wishlist"
               title={t.nav.wishlist}
             >
@@ -175,7 +187,7 @@ export const Header: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartDrawerOpen(true)}
-              className="relative text-gray-700 hover:text-[#B11226] transition-colors p-1"
+              className="relative hidden md:block text-gray-700 hover:text-[#B11226] transition-colors p-1"
               aria-label="Shopping Cart"
               title={t.nav.cart}
             >
@@ -347,175 +359,77 @@ export const Header: React.FC = () => {
           </div>
         )}
       </div>
+      </header>
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-[1000] flex">
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-300"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="relative ml-0 w-4/5 max-w-sm bg-white h-full shadow-2xl p-6 flex flex-col justify-between z-10 overflow-y-auto">
+          <div className="relative ml-0 w-[85vw] max-w-[400px] bg-[#050505] h-full shadow-2xl p-8 flex flex-col justify-between z-10 overflow-y-auto animate-in slide-in-from-left duration-300">
             <div>
-              <div className="flex items-center justify-between pb-6 border-b border-gray-100">
-                <span className="font-editorial text-xl font-bold tracking-widest text-[#111111]">
-                  VELVET CRIMSON
-                </span>
+              {/* Header inside drawer */}
+              <div className="flex items-center justify-between pb-8">
+                <div className="flex flex-col">
+                  <span className="font-editorial text-2xl font-bold tracking-widest text-white">
+                    VELVET CRIMSON
+                  </span>
+                </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1 text-gray-500 hover:text-[#B11226]"
+                  className="p-2 text-white hover:text-gray-300 transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-8 h-8 font-light" />
                 </button>
-              </div>
-
-              {/* Language Switcher in Mobile Drawer */}
-              <div className="mt-4 pb-4 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-xs text-gray-500 uppercase tracking-wider">
-                  {lang === 'bn' ? 'ভাষা নির্বাচন' : 'Language'}
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      toggleLanguage();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="px-3 py-1 text-xs rounded-full bg-[#FFF0F2] text-[#B11226] font-semibold border border-[#B11226]/30 flex items-center gap-1.5"
-                  >
-                    <Globe className="w-3.5 h-3.5" />
-                    <span>{lang === 'en' ? 'বাংলা সংস্করণ' : 'English Edition'}</span>
-                  </button>
-                </div>
               </div>
 
               {/* Mobile Navigation List */}
-              <nav className="mt-6 flex flex-col space-y-4">
-                {navItems.map((item) => (
-                  <button
-                    key={item.page}
-                    onClick={() => {
-                      if (item.page === 'shop') setSelectedCategory(null);
-                      setCurrentPage(item.page);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`text-left text-base font-medium py-2 transition-colors ${
-                      currentPage === item.page
-                        ? 'text-[#B11226] font-bold border-l-2 border-[#B11226] pl-3'
-                        : 'text-gray-800 hover:text-[#B11226] pl-1'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                {/* Customer Account Links in Mobile Drawer */}
-                <div className="pt-4 border-t border-gray-100">
-                  <div className="flex items-center justify-between mb-3 px-1">
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-                      {lang === 'bn' ? 'কাস্টমার মেনু' : 'Customer Account'}
-                    </span>
-                    {isLoggedIn && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF0F2] text-[#B11226]">
-                        <ShieldCheck className="w-3 h-3" />
-                        {lang === 'bn' ? 'গ্রাহক' : 'Customer'}
-                      </span>
-                    )}
-                  </div>
-
-                  {isLoggedIn ? (
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => {
-                          setCustomerTab('orders');
-                          setCurrentPage('account');
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between text-left py-2 px-2 text-sm text-gray-700 hover:text-[#B11226]"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Package className="w-4 h-4 text-gray-400" />
-                          {lang === 'bn' ? 'আমার অর্ডারসমূহ' : 'My Orders'}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setCustomerTab('track');
-                          setCurrentPage('account');
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between text-left py-2 px-2 text-sm text-gray-700 hover:text-[#B11226]"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Truck className="w-4 h-4 text-gray-400" />
-                          {lang === 'bn' ? 'অর্ডার ট্র্যাকিং' : 'Track Orders'}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setCustomerTab('profile');
-                          setCurrentPage('account');
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between text-left py-2 px-2 text-sm text-gray-700 hover:text-[#B11226]"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Settings className="w-4 h-4 text-gray-400" />
-                          {lang === 'bn' ? 'প্রোফাইল সেটিংস' : 'Profile Settings'}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          logoutCustomer();
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2 text-left py-2 px-2 text-sm text-red-600 font-semibold"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        {lang === 'bn' ? 'লগআউট' : 'Log Out'}
-                      </button>
-                    </div>
-                  ) : (
+              <nav className="mt-12 flex flex-col space-y-8">
+                {navItems.map((item) => {
+                  const isActive = currentPage === item.page;
+                  return (
                     <button
+                      key={item.page}
                       onClick={() => {
-                        setCurrentPage('account');
+                        if (item.page === 'shop') setSelectedCategory(null);
+                        setCurrentPage(item.page);
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full py-2 px-3 text-center bg-[#B11226] text-white rounded text-xs font-semibold"
+                      className={`text-left text-[28px] sm:text-4xl font-extrabold uppercase tracking-tight transition-colors flex items-center gap-6 ${
+                        isActive
+                          ? 'text-[#B11226]'
+                          : 'text-white hover:text-[#B11226]'
+                      }`}
                     >
-                      {lang === 'bn' ? 'কাস্টমার সাইন ইন / রেজিস্টার' : 'Sign In / Register'}
+                      {item.label}
+                      {isActive && (
+                        <span className="w-12 h-[3px] bg-[#B11226] inline-block rounded-full"></span>
+                      )}
                     </button>
-                  )}
-                </div>
-                <button
-                  onClick={() => {
-                    setCurrentPage('wishlist');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="text-left text-base font-medium py-2 text-gray-800 hover:text-[#B11226] pl-1 flex items-center justify-between"
-                >
-                  <span>{t.nav.wishlist}</span>
-                  {wishlist.length > 0 && (
-                    <span className="bg-[#B11226] text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                      {wishlist.length}
-                    </span>
-                  )}
-                </button>
+                  );
+                })}
               </nav>
             </div>
 
-            <div className="pt-6 border-t border-gray-100">
-              <p className="text-center text-[11px] text-gray-400">
-                © 2026 Velvet Crimson. Haute Couture Dhaka & London.
+            <div className="mt-16 pt-8 border-t border-white/5">
+              <button
+                onClick={() => {
+                  setCurrentPage('shop');
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full py-5 px-6 bg-[#B11226] hover:bg-[#8B0E1A] text-white font-bold uppercase tracking-[0.2em] text-sm transition-all"
+              >
+                {lang === 'bn' ? 'সংগ্রহশালা দেখুন' : 'EXPLORE COLLECTION'}
+              </button>
+              <p className="text-center text-[10px] sm:text-xs tracking-[0.25em] text-gray-500 uppercase mt-8 font-semibold italic">
+                {lang === 'bn' ? 'সারা দেশে ডেলিভারি এভেইলএবল' : 'AVAILABLE FOR WORLDWIDE SHIPPING'}
               </p>
             </div>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
